@@ -1,24 +1,33 @@
 #!/usr/bin/python3
-''' Test request to parse API's
-'''
+"""Export an employee TODO list to CSV."""
+
 import csv
-import requests
 import sys
 
+import requests
+
+
+def main():
+    if len(sys.argv) != 2:
+        sys.exit(1)
+
+    user_id = sys.argv[1]
+    base_url = "https://jsonplaceholder.typicode.com"
+
+    user = requests.get(f"{base_url}/users/{user_id}").json()
+    username = user.get("username")
+    todos = requests.get(f"{base_url}/users/{user_id}/todos").json()
+
+    with open(f"{user_id}.csv", "w", newline="", encoding="utf-8") as csv_file:
+        writer = csv.writer(csv_file, quotechar='"', quoting=csv.QUOTE_ALL)
+        for task in todos:
+            writer.writerow([
+                user_id,
+                username,
+                task.get("completed"),
+                task.get("title"),
+            ])
+
+
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1].isdigit():
-        api_endpoint = "https://jsonplaceholder.typicode.com"
-        user_id = sys.argv[1]
-        user_data = requests.get(api_endpoint + "/users/" + user_id).json()
-        username = user_data.get('username')
-        todo_data = \
-            requests.get(api_endpoint + "/users/" + user_id + "/todos").\
-            json()
-        with open("{}.csv".format(user_id), 'w') as csv_file:
-            for task in todo_data:
-                csv_file.write('"{}","{}","{}","{}"\n'.format(
-                    user_id,
-                    username,
-                    task.get('completed'),
-                    task.get('title')
-                ))
+    main()
