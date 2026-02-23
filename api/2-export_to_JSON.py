@@ -5,41 +5,22 @@ from https://jsonplaceholder.typicode.com
 """
 
 import json
-import sys
-
 import requests
+import sys
 
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python3 0-gather_data_from_an_API.py <employee_id>")
         sys.exit(1)
 
-    try:
-        employee_id = int(sys.argv[1])
-    except ValueError:
-        print("Employee ID must be an integer")
-        sys.exit(1)
+    user_id = sys.argv[1]
 
     base_url = "https://jsonplaceholder.typicode.com"
 
-    # Fetch employee info
-    user_resp = requests.get(f"{base_url}/users/{employee_id}")
-    if user_resp.status_code != 200:
-        sys.exit(1)
-
-    user = user_resp.json()
-    user_id = user.get("id")
+    user = requests.get(f"{base_url}/users/{user_id}").json()
     username = user.get("username")
 
-    # Fetch todos
-    todos_resp = requests.get(f"{base_url}/todos",
-                              params={"userId": employee_id})
-    if todos_resp.status_code != 200:
-        sys.exit(1)
-
-    todos = todos_resp.json()
-
+    todos = requests.get(f"{base_url}/users/{user_id}/todos").json()
     tasks = []
     for task in todos:
         tasks.append({
@@ -48,10 +29,9 @@ def main():
             "username": username
         })
 
-    filename = f"{user_id}.json"
-    data = {str(user_id): tasks}
+    data = {user_id: tasks}
 
-    with open(filename, mode="w", encoding="utf-8") as jsonfile:
+    with open(f"{user_id}.json", mode="w", encoding="utf-8") as jsonfile:
         json.dump(data, jsonfile)
 
 
