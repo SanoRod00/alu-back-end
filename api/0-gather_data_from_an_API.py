@@ -4,8 +4,9 @@ Fetch and display an employee's TODO list progress
 from https://jsonplaceholder.typicode.com
 """
 
-import requests
 import sys
+
+import requests
 
 
 def main():
@@ -30,8 +31,9 @@ def main():
     employee_name = user.get("name")
 
     # Fetch todos
-    todos_resp = requests.get(f"\
-    {base_url}/todos", params={"userId": employee_id})
+    todos_resp = requests.get(
+        f"{base_url}/todos", params={"userId": employee_id}
+    )
 
     if todos_resp.status_code != 200:
         sys.exit(1)

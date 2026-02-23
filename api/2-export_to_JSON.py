@@ -5,8 +5,9 @@ from https://jsonplaceholder.typicode.com
 """
 
 import json
-import requests
 import sys
+
+import requests
 
 
 def main():
@@ -52,6 +53,7 @@ def main():
 
     with open(filename, mode="w", encoding="utf-8") as jsonfile:
         json.dump(data, jsonfile)
+
 
 if __name__ == "__main__":
     main()
