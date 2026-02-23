@@ -4,9 +4,8 @@ Fetch and display an employee's TODO list progress
 from https://jsonplaceholder.typicode.com
 """
 
-import sys
-
 import requests
+import sys
 
 
 def main():
