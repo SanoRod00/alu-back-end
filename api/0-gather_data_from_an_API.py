@@ -1,49 +1,29 @@
 #!/usr/bin/python3
-"""
-Fetch and display an employee's TODO list progress.
-"""
+"""Module"""
 
 import requests
 import sys
 
 
-def main():
-    """Script entry point."""
-    if len(sys.argv) != 2:
-        return
+"""Module"""
 
-    try:
-        employee_id = int(sys.argv[1])
-    except ValueError:
-        return
+if __name__ == '__main__':
+    user_id = sys.argv[1]
+    user_url = "https://jsonplaceholder.typicode.com/users/{}" \
+        .format(user_id)
+    todos_url = "https://jsonplaceholder.typicode.com/users/{}/todos/" \
+        .format(user_id)
 
-    base_url = "https://jsonplaceholder.typicode.com"
-    user_url = "{}/users/{}".format(base_url, employee_id)
-    todos_url = "{}/users/{}/todos".format(base_url, employee_id)
+    user_info = requests.request('GET', user_url).json()
+    todos_info = requests.request('GET', todos_url).json()
 
-    try:
-        user_response = requests.get(user_url)
-        todos_response = requests.get(todos_url)
-    except requests.RequestException:
-        return
+    employee_name = user_info["name"]
+    task_completed = list(filter(lambda obj:
+                                 (obj["completed"] is True), todos_info))
+    number_of_done_tasks = len(task_completed)
+    total_number_of_tasks = len(todos_info)
 
-    if user_response.status_code != 200 or todos_response.status_code != 200:
-        return
+    print("Employee {} is done with tasks({}/{}):".
+          format(employee_name, number_of_done_tasks, total_number_of_tasks))
 
-    user = user_response.json()
-    todos = todos_response.json()
-
-    done_tasks = [task for task in todos if task.get("completed") is True]
-
-    print(
-        "Employee {} is done with tasks({}/{}):".format(
-            user.get("name"), len(done_tasks), len(todos)
-        )
-    )
-
-    for task in done_tasks:
-        print("\t {}".format(task.get("title")))
-
-
-if __name__ == "__main__":
-    main()
+    [print("\t " + task["title"]) for task in task_completed]
